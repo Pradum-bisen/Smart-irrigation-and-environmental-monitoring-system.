@@ -1,0 +1,7 @@
+Flask
+numpy
+requests
+matplotlib
+openpyxl
+gunicorn
+scikit-learn

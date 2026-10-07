@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartIrrigate</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+/* ===== GLOBAL ===== */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins', sans-serif;}
+body{
+background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)),
+url("{{ url_for('static', filename='photo.jpg') }}");
+background-size:cover;background-position:center;color:white;
+overflow-y:auto;scroll-behavior:smooth;
+}
+/* ===== NAVBAR ===== */
+.navbar{display:flex;justify-content:space-between;align-items:center;
+padding:15px 50px;background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);
+position:sticky;top:0;z-index:1000;}
+.logo{font-size:22px;font-weight:600;color:#4cff7a;}
+.nav-links a{margin:0 15px;text-decoration:none;color:white;transition:0.3s;}
+.nav-links a:hover{color:#4cff7a;}
+/* ===== LANGUAGE SELECTOR ===== */
+.lang{display:flex;gap:10px;}
+.lang button{padding:5px 10px;border:none;border-radius:6px;cursor:pointer;transition:all 0.3s ease;}
+.lang button:hover{background:#4cff7a;color:black;}
+/* ===== MAIN LAYOUT ===== */
+.main{display:flex;justify-content:space-between;align-items:center;padding:60px;min-height:85vh;}
+.left{flex:1;padding-right:40px;}
+.left h1,.left h2{font-size:42px;line-height:1.3;}
+.left p{margin-top:20px;font-size:18px;opacity:0.9;}
+.right{flex:1;display:flex;justify-content:center;}
+.form-box{width:400px;background:rgba(255,255,255,0.15);backdrop-filter:blur(15px);
+padding:30px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+input,select{width:100%;padding:12px;margin-top:10px;margin-bottom:15px;border:none;border-radius:8px;outline:none;}
+button{width:100%;padding:14px;border:none;border-radius:10px;background:linear-gradient(45deg,#4cff7a,#00ccff);
+color:black;font-weight:bold;cursor:pointer;transition:0.3s;}
+button:hover{transform:scale(1.05);}
+.extra-home ul{margin-top:20px;list-style:disc;padding-left:20px;}
+.about-content{margin-top:20px;font-size:18px;opacity:0.9;line-height:1.6;}
+@media(max-width:900px){
+.main{flex-direction:column;text-align:center;padding:20px;}
+.left{padding-right:0;margin-bottom:30px;}
+.form-box{width:90%;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="logo">SmartIrrigate</div>
+  <div class="nav-links">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+  </div>
+  <div class="lang">
+    <button onclick="setLang('en')">EN</button>
+    <button onclick="setLang('hi')">हिंदी</button>
+    <button onclick="setLang('mr')">मराठी</button>
+  </div>
+</div>
+
+<!-- HOME SECTION -->
+<div class="main" id="home">
+  <div class="left">
+    <h1 id="title">Smart Irrigation Predictions for Farmers</h1>
+    <p id="desc">Optimize water usage using AI &amp; weather data for Sugarcane</p>
+    <div class="extra-home">
+      <h2 id="why">Why SmartIrrigate?</h2>
+      <ul id="points">
+        <li>Save water with precise AI-driven predictions</li>
+        <li>Boost crop yield by monitoring soil and weather</li>
+        <li>Accessible in English, Hindi, and Marathi</li>
+        <li>Designed for farmers in diverse regions</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="form-box">
+      <form action="/predict" method="POST">
+        <!-- Default location set to Nagpur -->
+        <input type="text" name="location" id="loc" placeholder="Location" value="Nagpur" required>
+        <select name="soil_type" id="soil">
+          <option value="1">Black Soil</option>
+          <option value="2">Clay Soil</option>
+          <option value="3">Sandy Soil</option>
+        </select>
+        <select name="crop_stage" id="crop">
+          <option value="1">Seedling</option>
+          <option value="2">Middle Stage</option>
+          <option value="3">Mature Stage</option>
+        </select>
+        <input type="number" name="field_size" id="field" placeholder="Field Size (acres)" step="0.1">
+        <button type="submit" id="btn">Predict</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT SECTION -->
+<div class="main" id="about">
+  <div class="left">
+    <h2 id="aboutTitle">About SmartIrrigate</h2>
+    <p id="aboutDesc" class="about-content">
+      SmartIrrigate is built to empower farmers with modern technology.
+      By combining machine learning models with real-time weather data,
+      the platform provides accurate irrigation schedules tailored to
+      soil type, crop stage, and field size.
+    </p>
+  </div>
+  <div class="right"></div>
+</div>
+
+<!-- LANGUAGE SCRIPT -->
+<script>
+const langData = {
+  en: {
+    title: "Smart Irrigation Predictions for Modern Farmers",
+    desc: "Optimize water usage using AI & weather data",
+    btn: "Predict",
+    loc: "Location",
+    soil: ["Black Soil", "Clay Soil", "Sandy Soil"],
+    crop: ["Seedling", "Middle Stage", "Mature Stage"],
+    field: "Field Size (acres)",
+    why: "Why SmartIrrigate?",
+    points: [
+      "Save water with precise AI-driven predictions",
+      "Boost crop yield by monitoring soil and weather",
+      "Accessible in English, Hindi, and Marathi",
+      "Designed for farmers in diverse regions"
+    ],
+    aboutTitle: "About SmartIrrigate",
+    aboutDesc: "SmartIrrigate is built to empower farmers with modern technology. By combining machine learning models with real-time weather data, the platform provides accurate irrigation schedules tailored to soil type, crop stage, and field size."
+  },
+  hi: {
+    title: "आधुनिक किसानों के लिए स्मार्ट सिंचाई भविष्यवाणी",
+    desc: "AI और मौसम डेटा का उपयोग करके पानी के उपयोग को अनुकूलित करें",
+    btn: "पूर्वानुमान करें",
+    loc: "स्थान",
+    soil: ["काली मिट्टी", "चिकनी मिट्टी", "रेतीली मिट्टी"],
+    crop: ["अंकुरण", "मध्य अवस्था", "परिपक्व अवस्था"],
+    field: "खेत का आकार (एकड़)",
+    why: "क्यों चुनें SmartIrrigate?",
+    points: [
+      "AI आधारित पूर्वानुमान से पानी बचाएं",
+      "मिट्टी और मौसम की निगरानी से फसल उत्पादन बढ़ाएं",
+      "अंग्रेज़ी, हिंदी और मराठी में उपलब्ध",
+      "विभिन्न क्षेत्रों के किसानों के लिए डिज़ाइन किया गया"
+    ],
+    aboutTitle: "SmartIrrigate के बारे में",
+    aboutDesc: "SmartIrrigate किसानों को आधुनिक तकनीक से सशक्त बनाने के लिए बनाया गया है। मशीन लर्निंग और वास्तविक समय मौसम डेटा को मिलाकर यह प्लेटफ़ॉर्म मिट्टी के प्रकार, फसल की अवस्था और खेत के आकार के अनुसार सटीक सिंचाई अनुसूची प्रदान करता है।"
+  },
+  mr: {
+    title: "आधुनिक शेतकऱ्यांसाठी स्मार्ट सिंचन अंदाज",
+    desc: "AI आणि हवामान डेटाचा वापर करून पाण्याचा वापर सुधारा",
+    btn: "अंदाज घ्या",
+    loc: "स्थान",
+    soil: ["काळी माती", "चिकण माती", "वालुकामय माती"],
+    crop: ["रोपावस्था", "मधली अवस्था", "परिपक्व अवस्था"],
+    field: "शेताचा आकार (एकर)",
+    why: "SmartIrrigate का निवडावे?",
+    points: [
+      "AI आधारित अंदाजाने पाणी वाचवा",
+      "माती आणि हवामान निरीक्षणाने पीक उत्पादन वाढवा",
+      "इंग्रजी, हिंदी आणि मराठीमध्ये उपलब्ध",
+      "विविध प्रदेशातील शेतकऱ्यांसाठी डिझाइन केलेले"
+    ],
+    aboutTitle: "SmartIrrigate बद्दल",
+    aboutDesc: "SmartIrrigate शेतकऱ्यांना आधुनिक तंत्रज्ञानाने सक्षम करण्यासाठी तयार केले आहे. मशीन लर्निंग आणि वास्तविक वेळ हवामान डेटा एकत्र करून हे प्लॅटफॉर्म मातीचा प्रकार, पीकाची अवस्था आणि शेताचा आकार यानुसार अचूक सिंचन वेळापत्रक प्रदान करते."
+  }
+};
+
+function setLang(lang) {
+  const data = langData[lang];
+
+  // Update headings and descriptions
+  document.getElementById("title").innerText = data.title;
+  document.getElementById("desc").innerText = data.desc;
+  document.getElementById("btn").innerText = data.btn;
+
+  // Update input placeholders (keep Nagpur as value, only translate placeholder label)
+  document.getElementById("loc").placeholder = data.loc;
+  document.getElementById("field").placeholder = data.field;
+
+  // Update soil dropdown
+  const soilEl = document.getElementById("soil");
+  data.soil.forEach((text, i) => { soilEl.options[i].text = text; });
+
+  // Update crop dropdown
+  const cropEl = document.getElementById("crop");
+  data.crop.forEach((text, i) => { cropEl.options[i].text = text; });
+
+  // Update "Why SmartIrrigate?" section
+  document.getElementById("why").innerText = data.why;
+  const pointsList = document.getElementById("points");
+  pointsList.innerHTML = "";
+  data.points.forEach(pt => {
+    const li = document.createElement("li");
+    li.innerText = pt;
+    pointsList.appendChild(li);
+  });
+
+  // Update About section
+  document.getElementById("aboutTitle").innerText = data.aboutTitle;
+  document.getElementById("aboutDesc").innerText = data.aboutDesc;
+}
+
+// Smooth scroll for navbar links
+document.querySelectorAll('.nav-links a').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelector(this.getAttribute('href')).scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+});
+</script>
+</body>
+</html>

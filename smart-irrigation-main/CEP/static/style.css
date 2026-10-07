@@ -1,0 +1,367 @@
+/* ----------------------------
+   General Body Styling
+---------------------------- */
+
+body{
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin:0;
+    padding:0;
+    height:100vh;
+    color:#fff;
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    /* CENTER INDEX PAGE CONTENT */
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+
+/* ----------------------------
+   MAIN PAGE TITLE
+---------------------------- */
+
+.main-title{
+    position:absolute;
+    top:40px;
+    left:50%;
+    transform:translateX(-50%);
+
+    font-size:52px;
+    font-weight:800;
+
+    letter-spacing:3px;
+
+    color:#ffffff;
+
+    text-shadow:
+        0 0 10px rgba(255,255,255,0.9),
+        0 0 20px rgba(0,200,255,0.7),
+        0 0 35px rgba(0,200,255,0.6),
+        0 0 60px rgba(0,200,255,0.5);
+
+    animation:titleGlow 3s infinite alternate;
+}
+
+
+/* ----------------------------
+   Dashboard Layout (Result Page)
+---------------------------- */
+
+.dashboard{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:70px;
+    height:100vh;
+    padding:40px;
+}
+
+
+/* ----------------------------
+   Result Box (Today Data)
+---------------------------- */
+
+.result-box{
+    width:420px;
+    height:440px;
+
+    background:linear-gradient(
+        135deg,
+        rgba(0,212,255,0.18),
+        rgba(0,0,0,0.35)
+    );
+
+    border-radius:25px;
+    padding:30px;
+
+    box-shadow:0 10px 35px rgba(0,0,0,0.35);
+
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,0.25);
+
+    text-align:center;
+
+    animation:fadeIn 1s ease-in-out;
+}
+
+.result-box p{
+    font-size:1.2rem;
+    margin:8px 0;
+}
+
+
+/* ----------------------------
+   Weekly Table Box
+---------------------------- */
+
+.week-box{
+    width:420px;
+    height:440px;
+
+    background:rgba(255,255,255,0.15);
+
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+
+    border-radius:25px;
+    padding:25px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+
+    border:1px solid rgba(255,255,255,0.2);
+    animation:fadeIn 1s ease-in-out;
+}
+
+.week-box h3{
+    text-align:center;
+    margin-bottom:10px;
+}
+
+
+/* ----------------------------
+   Weekly Table Styling
+---------------------------- */
+
+.week-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.week-table th,
+.week-table td{
+    border:1px solid rgba(255,255,255,0.3);
+    padding:10px;
+    text-align:center;
+}
+
+.week-table th{
+    background:rgba(0,0,0,0.4);
+}
+
+
+/* ----------------------------
+   Container Styling (Index Form Page)
+---------------------------- */
+
+.container{
+    max-width:650px;
+    width:90%;
+
+    background:rgba(255,255,255,0.1);
+
+    padding:60px;
+
+    border-radius:25px;
+
+    box-shadow:0 8px 32px rgba(0,0,0,0.25);
+
+    backdrop-filter:blur(15px);
+    -webkit-backdrop-filter:blur(15px);
+
+    border:1px solid rgba(255,255,255,0.15);
+
+    animation:fadeIn 1s ease-in-out;
+}
+
+
+/* ----------------------------
+   Headings Styling
+---------------------------- */
+
+h1{
+    text-align:center;
+    font-size:3rem;
+    margin-bottom:25px;
+}
+
+p{
+    text-align:center;
+    font-size:1.2rem;
+}
+
+
+/* ----------------------------
+   Form Styling
+---------------------------- */
+
+form label{
+    display:block;
+    margin-top:20px;
+    font-weight:bold;
+}
+
+.farm-label{
+    font-size:1.6rem;
+}
+
+form input[type="text"],
+form input[type="number"],
+form select{
+    width:100%;
+
+    padding:16px 18px;
+
+    margin-top:8px;
+
+    border:1px solid rgba(255,255,255,0.3);
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,0.15);
+
+    color:#ffffff;
+
+    font-size:1.2rem;
+
+    transition:all 0.3s ease;
+}
+
+form select option{
+    background:#474545;
+    color:#ffffff;
+}
+
+form input:focus,
+form select:focus{
+    outline:none;
+    border-color:rgba(249,247,247,0.6);
+    box-shadow:0 0 12px rgba(255,255,255,0.3);
+}
+
+
+/* ----------------------------
+   Submit Button Styling
+---------------------------- */
+
+input[type="submit"]{
+
+    width:100%;
+
+    padding:18px;
+
+    margin-top:30px;
+
+    background:rgba(44,241,4,0.85);
+
+    color:#edea16;
+
+    font-size:1.4rem;
+
+    font-weight:bold;
+
+    border:1px solid rgba(255,255,255,0.3);
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    transition:transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+input[type="submit"]:hover{
+    transform:scale(1.05);
+    box-shadow:0 8px 18px rgba(0,0,0,0.25);
+}
+
+
+/* ----------------------------
+   Signal Text Styling
+---------------------------- */
+
+.signal-text{
+    text-align:center;
+    margin-top:15px;
+    font-size:2rem;
+    font-weight:700;
+    letter-spacing:1px;
+    animation:neonPulse 2s infinite alternate;
+}
+
+/* Red Neon Alert */
+.red-text{
+    color:#ff3b3b;
+    font-weight:700;
+    letter-spacing:1px;
+
+    text-shadow:
+        0 0 5px rgba(255,59,59,0.9),
+        0 0 10px rgba(255,59,59,0.7),
+        0 0 18px rgba(255,0,0,0.5),
+        0 0 28px rgba(255,0,0,0.35);
+}
+
+/* Yellow Neon Glow */
+
+.yellow-text{
+    color:#ffd633;
+    font-weight:700;
+
+    text-shadow:
+        0 0 6px #ffd633,
+        0 0 12px #ffd633,
+        0 0 20px #ffcc00,
+        0 0 35px rgba(255,204,0,0.7),
+        0 0 60px rgba(255,204,0,0.5);
+}
+/* Green Neon Safe */
+.green-text{
+    color:#2ecc71;
+    text-shadow:
+        0 0 8px #2ecc71,
+        0 0 16px #2ecc71,
+        0 0 30px #00ff88,
+        0 0 50px #00ff88,
+        0 0 80px #00ff88;
+}
+
+
+
+/* ----------------------------
+   Animations
+---------------------------- */
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@keyframes neonPulse{
+    from{
+        transform:scale(1);
+        opacity:0.85;
+    }
+    to{
+        transform:scale(1.05);
+        opacity:1;
+    }
+}
+
+
+/* Title Glow Animation */
+
+@keyframes titleGlow{
+    from{
+        text-shadow:
+            0 0 10px rgba(255,255,255,0.8),
+            0 0 25px rgba(0,200,255,0.7);
+    }
+
+    to{
+        text-shadow:
+            0 0 25px rgba(255,255,255,1),
+            0 0 40px rgba(0,200,255,0.9),
+            0 0 60px rgba(0,200,255,0.7);
+    }
+}

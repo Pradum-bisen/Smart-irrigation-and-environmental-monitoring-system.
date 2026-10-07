@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Irrigation</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins', sans-serif;}
+body{
+background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)),
+url("{{ url_for('static', filename='photo.jpg') }}");
+background-size:cover;background-position:center;color:white;
+overflow-y:auto;scroll-behavior:smooth;
+}
+.navbar{display:flex;justify-content:space-between;align-items:center;
+padding:15px 50px;background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);
+position:sticky;top:0;z-index:1000;}
+.logo{font-size:22px;font-weight:600;color:#4cff7a;}
+.nav-links a{margin:0 15px;text-decoration:none;color:white;transition:0.3s;}
+.nav-links a:hover{color:#4cff7a;}
+.lang{display:flex;gap:10px;}
+.lang button{padding:5px 10px;border:none;border-radius:6px;cursor:pointer;transition:all 0.3s ease;}
+.lang button:hover{background:#4cff7a;color:black;}
+.lang button.active{background:#4cff7a;color:black;font-weight:600;}
+.main{display:flex;justify-content:space-between;align-items:flex-start;padding:60px;min-height:85vh;}
+.block{flex:1;margin:20px;background:rgba(255,255,255,0.15);backdrop-filter:blur(15px);
+padding:30px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+.block h2{color:#4cff7a;margin-bottom:15px;}
+.week-table{width:100%;border-collapse:collapse;margin-top:15px;}
+.week-table th,.week-table td{padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.2);}
+.week-table th{background:rgba(0,0,0,0.3);}
+.irrigation-red{color:#ff4c4c;font-size:22px;font-weight:bold;}
+.irrigation-yellow{color:#ffd84d;font-size:22px;font-weight:bold;}
+.irrigation-green{color:#4cff7a;font-size:22px;font-weight:bold;}
+.back-btn{position:fixed;bottom:25px;left:25px;color:white;font-size:18px;text-decoration:none;}
+canvas{margin-top:20px;}
+.download-btn{
+  display:inline-block; margin-top:15px;
+  background:#4cff7a; color:black;
+  padding:12px 20px; border-radius:8px;
+  text-decoration:none; font-weight:600;
+  transition: background 0.2s;
+}
+.download-btn:hover{background:#39e86b;}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="logo">SmartIrrigate</div>
+  <div class="nav-links">
+    <a href="/" id="homeNav">Home</a>
+    <a href="#result" id="resultNav">Result</a>
+    <a href="#report" id="reportNav">Report</a>
+  </div>
+  <div class="lang">
+    <button onclick="setLang('en')" id="btn-en" class="active">EN</button>
+    <button onclick="setLang('hi')" id="btn-hi">हिंदी</button>
+    <button onclick="setLang('mr')" id="btn-mr">मराठी</button>
+  </div>
+</div>
+
+<!-- RESULT SECTION -->
+<div class="main" id="result">
+  <div class="block">
+    <h2 id="pageTitle">Smart Irrigation Result</h2>
+    <p><b id="locLabel">Location:</b> <span id="locValue">{{ location }}</span></p>
+    <p><b id="tempLabel">Temperature:</b> <span>{{ temperature }} °C</span></p>
+    <p><b id="humLabel">Humidity:</b> <span>{{ humidity }} %</span></p>
+    <p><b id="rainLabel">Rainfall:</b> <span>{{ rainfall }} mm</span></p>
+    <p><b id="soilLabel">Soil Type:</b>
+      <span id="soilValue"
+        data-en="{% if soil_type == 1 %}Black Soil{% elif soil_type == 2 %}Clay Soil{% else %}Sandy Soil{% endif %}"
+        data-hi="{% if soil_type == 1 %}काली मिट्टी{% elif soil_type == 2 %}चिकनी मिट्टी{% else %}रेतीली मिट्टी{% endif %}"
+        data-mr="{% if soil_type == 1 %}काळी माती{% elif soil_type == 2 %}चिकण माती{% else %}वालुकामय माती{% endif %}">
+        {% if soil_type == 1 %}Black Soil{% elif soil_type == 2 %}Clay Soil{% else %}Sandy Soil{% endif %}
+      </span>
+    </p>
+    <p><b id="cropLabel">Crop Stage:</b>
+      <span id="cropValue"
+        data-en="{% if crop_stage == 1 %}Seedling{% elif crop_stage == 2 %}Middle Stage{% else %}Mature Stage{% endif %}"
+        data-hi="{% if crop_stage == 1 %}अंकुर अवस्था{% elif crop_stage == 2 %}मध्य अवस्था{% else %}परिपक्व अवस्था{% endif %}"
+        data-mr="{% if crop_stage == 1 %}रोप अवस्था{% elif crop_stage == 2 %}मध्य अवस्था{% else %}परिपक्व अवस्था{% endif %}">
+        {% if crop_stage == 1 %}Seedling{% elif crop_stage == 2 %}Middle Stage{% else %}Mature Stage{% endif %}
+      </span>
+    </p>
+    <h3 id="irrigationText"
+        data-en-red="Irrigation Required Today"
+        data-en-yellow="Irrigation Recommended Soon"
+        data-en-green="No Irrigation Needed"
+        data-hi-red="आज सिंचाई आवश्यक है"
+        data-hi-yellow="जल्द सिंचाई की सिफारिश"
+        data-hi-green="सिंचाई की आवश्यकता नहीं"
+        data-mr-red="आज सिंचन आवश्यक आहे"
+        data-mr-yellow="लवकरच सिंचन शिफारस"
+        data-mr-green="सिंचनाची गरज नाही"
+        class="{% if irrigation == 1 %}irrigation-red{% elif irrigation == 0 and humidity < 40 %}irrigation-yellow{% else %}irrigation-green{% endif %}">
+        {{ alert }}
+    </h3>
+    <p>
+      <b id="waterLabel">Water Needed Today:</b>
+      <span id="waterValue">{{ water_needed }}</span> <span id="litresLabel">Litres</span>
+    </p>
+  </div>
+
+  <div class="block">
+    <h2 id="weekTitle">Next 6 Day Irrigation Plan</h2>
+    <table class="week-table">
+      <tr>
+        <th id="dayCol">Day</th>
+        <th id="irrCol">Irrigation</th>
+        <th id="waterCol">Water</th>
+      </tr>
+      {% for day in week_prediction[1:] %}
+      <tr>
+        <td class="day-cell"
+            data-en="{{ day.day }}"
+            data-hi="{{ {
+              'Monday':'सोमवार','Tuesday':'मंगलवार','Wednesday':'बुधवार',
+              'Thursday':'गुरुवार','Friday':'शुक्रवार','Saturday':'शनिवार','Sunday':'रविवार'
+            }[day.day] }}"
+            data-mr="{{ {
+              'Monday':'सोमवार','Tuesday':'मंगळवार','Wednesday':'बुधवार',
+              'Thursday':'गुरुवार','Friday':'शुक्रवार','Saturday':'शनिवार','Sunday':'रविवार'
+            }[day.day] }}">
+          {{ day.day }}
+        </td>
+        <td class="irr-cell"
+            data-en="{{ day.irrigation }}"
+            data-hi="{{ 'सिंचाई आवश्यक' if day.irrigation == 'Irrigation Required' else 'सिंचाई नहीं' }}"
+            data-mr="{{ 'सिंचन आवश्यक' if day.irrigation == 'Irrigation Required' else 'सिंचन नाही' }}">
+          {{ day.irrigation }}
+        </td>
+        <td class="water-cell" data-value="{{ day.water }}">{{ day.water }} L</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+<!-- REPORT SECTION -->
+<div class="main" id="report">
+  <div class="block">
+    <h2 id="graphTitle">Water Requirement Graph</h2>
+    <img src="{{ url_for('static', filename=graph) }}?v={{ range(1,10000)|random }}"
+         alt="Water Graph"
+         style="width:100%; margin-top:10px; border-radius:10px;">
+  </div>
+  <div class="block" style="text-align:center;">
+    <h2 id="downloadTitle">Report</h2>
+    <a id="downloadBtn"
+       href="{{ url_for('download_excel') }}?lang=en"
+       class="download-btn">
+        Download Excel Report
+    </a>
+  </div>
+</div>
+
+<a href="/" class="back-btn" id="backBtn">← Back</a>
+
+<!-- LANGUAGE SCRIPT -->
+<script>
+let currentLang = 'en';
+
+const langData = {
+  en: {
+    homeNav:      "Home",
+    resultNav:    "Result",
+    reportNav:    "Report",
+    pageTitle:    "Smart Irrigation Result",
+    locLabel:     "Location:",
+    tempLabel:    "Temperature:",
+    humLabel:     "Humidity:",
+    rainLabel:    "Rainfall:",
+    soilLabel:    "Soil Type:",
+    cropLabel:    "Crop Stage:",
+    waterLabel:   "Water Needed Today:",
+    litresLabel:  "Litres",
+    weekTitle:    "Next 6 Day Irrigation Plan",
+    dayCol:       "Day",
+    irrCol:       "Irrigation",
+    waterCol:     "Water",
+    graphTitle:   "Water Requirement Graph",
+    downloadBtn:  " Download Excel Report",
+    downloadTitle:"Report",
+    backBtn:      "← Back"
+  },
+  hi: {
+    homeNav:      "होम",
+    resultNav:    "परिणाम",
+    reportNav:    "रिपोर्ट",
+    pageTitle:    "स्मार्ट सिंचाई परिणाम",
+    locLabel:     "स्थान:",
+    tempLabel:    "तापमान:",
+    humLabel:     "आर्द्रता:",
+    rainLabel:    "वर्षा:",
+    soilLabel:    "मिट्टी का प्रकार:",
+    cropLabel:    "फसल अवस्था:",
+    waterLabel:   "आज आवश्यक पानी:",
+    litresLabel:  "लीटर",
+    weekTitle:    "अगले 6 दिन की सिंचाई योजना",
+    dayCol:       "दिन",
+    irrCol:       "सिंचाई",
+    waterCol:     "पानी",
+    graphTitle:   "पानी की आवश्यकता ग्राफ",
+    downloadBtn:  " एक्सेल रिपोर्ट डाउनलोड करें",
+    downloadTitle:"रिपोर्ट",
+    backBtn:      "← वापस"
+  },
+  mr: {
+    homeNav:      "होम",
+    resultNav:    "निकाल",
+    reportNav:    "अहवाल",
+    pageTitle:    "स्मार्ट सिंचन निकाल",
+    locLabel:     "स्थान:",
+    tempLabel:    "तापमान:",
+    humLabel:     "आर्द्रता:",
+    rainLabel:    "पाऊस:",
+    soilLabel:    "मातीचा प्रकार:",
+    cropLabel:    "पिकाची अवस्था:",
+    waterLabel:   "आज लागणारे पाणी:",
+    litresLabel:  "लिटर",
+    weekTitle:    "पुढील ६ दिवसांचे सिंचन नियोजन",
+    dayCol:       "दिवस",
+    irrCol:       "सिंचन",
+    waterCol:     "पाणी",
+    graphTitle:   "पाण्याची गरज ग्राफ",
+    downloadBtn:  " एक्सेल अहवाल डाउनलोड करा",
+    downloadTitle:"अहवाल",
+    backBtn:      "← मागे"
+  }
+};
+
+function setLang(lang) {
+  currentLang = lang;
+  const d = langData[lang];
+
+  // Update active button style
+  ['en','hi','mr'].forEach(l => {
+    document.getElementById('btn-' + l).classList.toggle('active', l === lang);
+  });
+
+  // Navbar links
+  document.getElementById("homeNav").innerText      = d.homeNav;
+  document.getElementById("resultNav").innerText    = d.resultNav;
+  document.getElementById("reportNav").innerText    = d.reportNav;
+
+  // Result block
+  document.getElementById("pageTitle").innerText    = d.pageTitle;
+  document.getElementById("locLabel").innerText     = d.locLabel;
+  document.getElementById("tempLabel").innerText    = d.tempLabel;
+  document.getElementById("humLabel").innerText     = d.humLabel;
+  document.getElementById("rainLabel").innerText    = d.rainLabel;
+  document.getElementById("soilLabel").innerText    = d.soilLabel;
+  document.getElementById("cropLabel").innerText    = d.cropLabel;
+  document.getElementById("waterLabel").innerText   = d.waterLabel;
+  document.getElementById("litresLabel").innerText  = d.litresLabel;
+
+  // Week plan block
+  document.getElementById("weekTitle").innerText    = d.weekTitle;
+  document.getElementById("dayCol").innerText       = d.dayCol;
+  document.getElementById("irrCol").innerText       = d.irrCol;
+  document.getElementById("waterCol").innerText     = d.waterCol;
+
+  // Report block
+  document.getElementById("graphTitle").innerText   = d.graphTitle;
+  document.getElementById("downloadBtn").innerText  = d.downloadBtn;
+  document.getElementById("downloadTitle").innerText= d.downloadTitle;
+  document.getElementById("backBtn").innerText      = d.backBtn;
+
+  // Dynamic data attributes
+  document.getElementById("soilValue").innerText = document.getElementById("soilValue").getAttribute("data-" + lang);
+  document.getElementById("cropValue").innerText = document.getElementById("cropValue").getAttribute("data-" + lang);
+
+  const irrElem = document.getElementById("irrigationText");
+  let key = "green";
+  if (irrElem.classList.contains("irrigation-red"))    key = "red";
+  if (irrElem.classList.contains("irrigation-yellow")) key = "yellow";
+  irrElem.innerText = irrElem.getAttribute("data-" + lang + "-" + key);
+
+  document.querySelectorAll(".day-cell").forEach(cell => {
+    cell.innerText = cell.getAttribute("data-" + lang);
+  });
+  document.querySelectorAll(".irr-cell").forEach(cell => {
+    cell.innerText = cell.getAttribute("data-" + lang);
+  });
+  document.querySelectorAll(".water-cell").forEach(cell => {
+    const val = cell.getAttribute("data-value");
+    const unit = lang === "en" ? "L" : "ली.";
+    cell.innerText = val + " " + unit;
+  });
+
+  // Update Excel download link with current language
+  document.getElementById("downloadBtn").href = "/download_excel?lang=" + lang;
+}
+
+// Smooth scroll for navbar links
+document.querySelectorAll('.nav-links a').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      document.querySelector(href).scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>
